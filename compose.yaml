@@ -5,6 +5,11 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: sqlite:////data/neural_lab.db
+      WEB_AI_VECTOR_DIR: /data/web_ai_vectors
+      HF_TOKEN: ${HF_TOKEN:-}
+      BRAVE_SEARCH_API_KEY: ${BRAVE_SEARCH_API_KEY:-}
+      HF_MODEL: ${HF_MODEL:-}
+      WEB_AI_LLM_MODEL: ${WEB_AI_LLM_MODEL:-}
     volumes:
       - neural_lab_data:/data
     healthcheck:

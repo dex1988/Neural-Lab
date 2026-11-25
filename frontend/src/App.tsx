@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom'
 import {
-  Activity, BarChart3, Boxes, Database, FlaskConical, LayoutDashboard,
+  Activity, BarChart3, Boxes, Database, FlaskConical, LayoutDashboard, Globe2,
   Play, Plus, Search, Settings, Trash2, UploadCloud, BrainCircuit, MessageCircle, Send, Sparkles,
 } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api } from './services/api'
+import WebAITrainer from './WebAITrainer'
 import type { ChatMessage, DashboardSummary, Dataset, DatasetPreview, LatestPrediction, TrainedModel } from './services/api'
 import './App.css'
 import './Chat.css'
@@ -23,6 +24,12 @@ const navGroups = [
       { to: '/models', label: 'Models', icon: Boxes },
       { to: '/predict', label: 'Prediction playground', icon: BrainCircuit },
       { to: '/chat', label: 'Chat with Data', icon: MessageCircle },
+    ],
+  },
+  {
+    label: 'Web AI Trainer',
+    items: [
+      { to: '/web-ai', label: 'My AI models', icon: Globe2 },
     ],
   },
   {
@@ -72,6 +79,7 @@ function Shell() {
           <Route path="/models" element={<Models />} />
           <Route path="/predict" element={<Predict />} />
           <Route path="/chat" element={<ChatWithData />} />
+          <Route path="/web-ai" element={<WebAITrainer />} />
           <Route path="/hf-chat" element={<HuggingFacePlayground />} />
         </Routes>
       </main>

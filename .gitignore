@@ -6,5 +6,6 @@ __pycache__/
 data/*.db
 data/uploads/
 data/models/
+data/web_ai_vectors/
 frontend/node_modules/
 frontend/dist/

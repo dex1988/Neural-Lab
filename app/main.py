@@ -15,6 +15,7 @@ from app.routers.training import router as training_router
 from app.routers.predictions import router as predictions_router
 from app.routers.dashboard import router as dashboard_router
 from app.routers.chat import router as chat_router
+from app.routers.web_ai import router as web_ai_router
 from app.schemas import HealthRead
 
 
@@ -47,6 +48,7 @@ app.include_router(training_router)
 app.include_router(predictions_router)
 app.include_router(dashboard_router)
 app.include_router(chat_router)
+app.include_router(web_ai_router)
 
 
 @app.get("/health", response_model=HealthRead, tags=["health"])

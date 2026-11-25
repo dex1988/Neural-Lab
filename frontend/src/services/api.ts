@@ -64,6 +64,55 @@ export interface LatestPrediction {
   probabilities: Record<string, number> | null
 }
 
+export interface WebAIModel {
+  id: number
+  name: string
+  description: string | null
+  topic: string
+  status: 'idle' | 'queued' | 'running' | 'completed' | 'failed'
+  status_message: string | null
+  created_at: string
+  updated_at: string
+  source_count: number
+  chunk_count: number
+  discovered_count: number
+  retrieved_count: number
+  processed_count: number
+  error_count: number
+  skipped_count: number
+  chat_ready: boolean
+}
+
+export interface WebAISource {
+  id: number
+  model_id: number
+  parent_id: number | null
+  kind: 'url' | 'query' | 'webpage' | 'text'
+  value: string
+  url: string | null
+  title: string | null
+  status: 'pending' | 'retrieving' | 'retrieved' | 'processing' | 'processed' | 'failed'
+  selected: boolean
+  error: string | null
+  retrieved_at: string | null
+  chunk_count: number
+}
+
+export interface WebAISourceDetail extends WebAISource {
+  content: string | null
+}
+
+export interface WebAIChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export interface WebAIChatReply {
+  reply: string
+  model: string
+  sources: { title: string; url: string }[]
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(path, options)
   if (!response.ok) {
@@ -126,6 +175,52 @@ export const api = {
         hf_token: hfToken.trim() || undefined,
         latest_prediction: latestPrediction,
         context_mode: contextMode,
+      }),
+    }),
+  webAIModels: () => request<WebAIModel[]>('/api/v1/web-ai/models'),
+  createWebAIModel: (body: { name: string; description: string; topic: string; urls: string[]; queries: string[] }) =>
+    request<WebAIModel>('/api/v1/web-ai/models', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  deleteWebAIModel: (id: number) => request<void>(`/api/v1/web-ai/models/${id}`, { method: 'DELETE' }),
+  webAISources: (id: number) => request<WebAISource[]>(`/api/v1/web-ai/models/${id}/sources`),
+  addWebAISource: (id: number, kind: 'url' | 'query' | 'text', value: string) =>
+    request<WebAISource>(`/api/v1/web-ai/models/${id}/sources`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind, value }),
+    }),
+  inspectWebAISource: (modelId: number, sourceId: number) =>
+    request<WebAISourceDetail>(`/api/v1/web-ai/models/${modelId}/sources/${sourceId}`),
+  selectWebAISource: (modelId: number, sourceId: number, selected: boolean) =>
+    request<WebAISource>(`/api/v1/web-ai/models/${modelId}/sources/${sourceId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ selected }),
+    }),
+  deleteWebAISource: (modelId: number, sourceId: number) =>
+    request<void>(`/api/v1/web-ai/models/${modelId}/sources/${sourceId}`, { method: 'DELETE' }),
+  learnWebAI: (id: number, braveSearchApiKey: string) =>
+    request<WebAIModel>(`/api/v1/web-ai/models/${id}/learn`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brave_search_api_key: braveSearchApiKey.trim() || undefined }),
+    }),
+  refreshWebAI: (id: number, braveSearchApiKey: string) =>
+    request<WebAIModel>(`/api/v1/web-ai/models/${id}/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brave_search_api_key: braveSearchApiKey.trim() || undefined }),
+    }),
+  chatWebAI: (id: number, messages: WebAIChatMessage[], hfToken: string) =>
+    request<WebAIChatReply>(`/api/v1/web-ai/models/${id}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: messages.map(({ role, content }) => ({ role, content })),
+        hf_token: hfToken.trim() || undefined,
       }),
     }),
 }

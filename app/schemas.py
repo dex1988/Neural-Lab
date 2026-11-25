@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -101,3 +101,77 @@ class ChatRequest(BaseModel):
     hf_token: str | None = Field(default=None, max_length=512)
     latest_prediction: dict[str, object] | None = None
     context_mode: Literal["data", "standalone"] = "data"
+
+
+class WebAISourceInput(BaseModel):
+    kind: Literal["url", "query", "text"]
+    value: str = Field(min_length=1, max_length=60000)
+
+
+class WebAIModelCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    description: str | None = Field(default=None, max_length=1000)
+    topic: str = Field(min_length=1, max_length=2000)
+    urls: list[Annotated[str, Field(min_length=4, max_length=2048)]] = Field(
+        default_factory=list, max_length=20
+    )
+    queries: list[Annotated[str, Field(min_length=1, max_length=500)]] = Field(
+        default_factory=list, max_length=20
+    )
+
+
+class WebAISourceSelection(BaseModel):
+    selected: bool
+
+
+class WebAIChatRequest(BaseModel):
+    messages: list[ChatMessage] = Field(min_length=1, max_length=20)
+    hf_token: str | None = Field(default=None, max_length=512)
+
+
+class WebAILearnRequest(BaseModel):
+    brave_search_api_key: str | None = Field(default=None, max_length=512)
+
+
+class WebAISourceRead(BaseModel):
+    id: int
+    model_id: int
+    parent_id: int | None
+    kind: str
+    value: str
+    url: str | None
+    title: str | None
+    status: str
+    selected: bool
+    error: str | None
+    retrieved_at: datetime | None
+    chunk_count: int
+
+
+class WebAIModelRead(BaseModel):
+    id: int
+    name: str
+    description: str | None
+    topic: str
+    status: str
+    status_message: str | None
+    created_at: datetime
+    updated_at: datetime
+    source_count: int
+    chunk_count: int
+    discovered_count: int
+    retrieved_count: int
+    processed_count: int
+    error_count: int
+    skipped_count: int
+    chat_ready: bool
+
+
+class WebAISourceDetail(WebAISourceRead):
+    content: str | None
+
+
+class WebAIChatRead(BaseModel):
+    reply: str
+    model: str
+    sources: list[dict[str, str]]

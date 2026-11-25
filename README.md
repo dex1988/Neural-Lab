@@ -13,6 +13,7 @@ NeuralLab is a local machine-learning training studio for uploading datasets, co
 - Persistent datasets, training configurations, experiments, and model artifacts
 - Model prediction playground with class probabilities
 - Chat with Data assistant powered by the Hugging Face Inference API (no local LLM weights)
+- Independent Web AI Trainer that researches public websites and builds isolated, cited RAG knowledge bases
 - Dark, responsive React dashboard using Recharts and Lucide
 
 ## Architecture
@@ -51,6 +52,14 @@ export HF_TOKEN="hf_your_token"
 
 The chat uses `meta-llama/Llama-3.2-3B-Instruct` by default. Set `HF_MODEL` to choose another default model, or enter a model ID in the chat panel. The latest prediction generated in Prediction playground is included automatically.
 
+### Web AI Trainer
+
+Web AI Trainer is a separate workspace from CSV datasets and Training Studio. For each assistant, add your own text, retrieve allowed public webpages, and build a persisted, searchable knowledge base using local text hashing and an isolated FAISS vector index; it does **not** retrain a foundation model. A website URL crawls up to 25 allowed pages on the same origin. Indexing does not require a Hugging Face token. Enter a Hugging Face read or inference-enabled Hugging Face token in the trainer for grounded AI answers and enable the Brave Search API key checkbox when using search queries; both are kept in page memory. Server-side `HF_TOKEN` and `BRAVE_SEARCH_API_KEY` remain available as fallbacks. Direct website URLs and manually provided text do not need a search key. The trainer defaults to `Qwen/Qwen2.5-7B-Instruct`; optional `WEB_AI_LLM_MODEL` and `WEB_AI_VECTOR_DIR` select another answer model or persistent FAISS storage directory.
+
+Adding a website URL automatically starts its crawl and indexing; website URLs supplied when creating an assistant do the same. Research obeys each website's `robots.txt`, applies public-network URL checks and size/rate limits, and does not follow redirects or access login/paywall-protected pages. Only add sources you have permission to use. Extracted page content is untrusted input and is never executed.
+
+Source progress moves through pending, retrieving, retrieved, processing, processed, or failed and is polled by the trainer. Chat is enabled only when selected source content has been indexed successfully; missing provider configuration is reported on the affected source.
+
 You can also enter a Hugging Face token directly in Chat with Data; it overrides `HF_TOKEN` for chat requests only and is kept in page memory, not browser storage.
 
 To add another chat model, enter its public Hugging Face Hub repository ID in **Add a Hugging Face model**. The app saves the ID in browser storage and uses the model remotely through an Inference Provider; it does not upload model weights. Access and provider support depend on the selected model.
@@ -82,7 +91,7 @@ Open `http://localhost:5173`. The API documentation is at `http://localhost:8000
 docker compose up --build
 ```
 
-The application is available at `http://localhost:8000`.
+Set `HF_TOKEN` and optionally `BRAVE_SEARCH_API_KEY` in the environment or a local Compose `.env` file to enable Web AI Trainer providers. The application is available at `http://localhost:8000`.
 
 ## Example workflow
 
@@ -105,6 +114,10 @@ The application is available at `http://localhost:8000`.
 - `POST /api/v1/models/{id}/predict` — generate a prediction
 - `GET /api/v1/dashboard/summary` — dashboard statistics
 - `GET /api/v1/experiments` — manage experiments
+- `/api/v1/web-ai/models` — create and manage independent web-trained AI models
+- `/api/v1/web-ai/models/{id}/sources` — manage, select, and inspect sources
+- `/api/v1/web-ai/models/{id}/learn` — research and index selected sources
+- `/api/v1/web-ai/models/{id}/chat` — chat with retrieved knowledge and source citations
 
 ## Tests
 

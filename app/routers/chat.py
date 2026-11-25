@@ -16,7 +16,7 @@ from app.schemas import ChatRequest
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["chat"])
-DEFAULT_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
+DEFAULT_MODEL = "Qwen/Qwen2.5-7B-Instruct"
 CONTEXT_SAMPLE_LIMIT = 1000
 
 

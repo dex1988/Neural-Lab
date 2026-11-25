@@ -27,6 +27,15 @@
             "problemMatcher": []
         },
         {
+            "label": "Prepare Neural-Lab for Debug",
+            "dependsOn": [
+                "Migrate Neural-Lab database",
+                "Build Neural-Lab frontend"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
             "label": "Serve Neural-Lab",
             "type": "process",
             "command": "${workspaceFolder}/.venv/bin/python",
@@ -34,11 +43,12 @@
                 "-m",
                 "uvicorn",
                 "app.main:app",
-                "--reload",
+                "--env-file",
+                "${workspaceFolder}/.env",
                 "--host",
                 "0.0.0.0",
                 "--port",
-                "8080"
+                "8081"
             ],
             "isBackground": true,
             "dependsOn": [
@@ -46,6 +56,27 @@
                 "Build Neural-Lab frontend"
             ],
             "dependsOrder": "sequence",
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "."
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*",
+                    "endsPattern": "Uvicorn running on"
+                }
+            }
+        },
+        {
+            "label": "serve neural lab",
+            "type": "process",
+            "command": "docker",
+            "args": [
+                "compose",
+                "up",
+                "--build"
+            ],
+            "isBackground": true,
             "problemMatcher": {
                 "pattern": {
                     "regexp": "."

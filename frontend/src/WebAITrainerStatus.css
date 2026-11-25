@@ -1,0 +1,4 @@
+.web-ai-source-status.retrieving,.web-ai-source-status.retrieved,.web-ai-source-status.processing{color:#b4aaff;border-color:#3a3559}
+.web-ai-source-status.failed{color:#e99ca5;border-color:#503039}
+.web-ai-add-source textarea{min-height:74px;resize:vertical;border:1px solid #2d303a;border-radius:7px;background:#0d0e13;color:#dedfe4;padding:8px;font:inherit;font-size:10px;min-width:0;outline:none}
+.web-ai-citations span{color:#aaa0ff;font-size:9px}
