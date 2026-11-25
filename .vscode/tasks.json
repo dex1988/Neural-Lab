@@ -1,0 +1,61 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Migrate Neural-Lab database",
+            "type": "process",
+            "command": "${workspaceFolder}/.venv/bin/python",
+            "args": [
+                "-m",
+                "alembic",
+                "upgrade",
+                "head"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Neural-Lab frontend",
+            "type": "process",
+            "command": "npm",
+            "args": [
+                "run",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Serve Neural-Lab",
+            "type": "process",
+            "command": "${workspaceFolder}/.venv/bin/python",
+            "args": [
+                "-m",
+                "uvicorn",
+                "app.main:app",
+                "--reload",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8080"
+            ],
+            "isBackground": true,
+            "dependsOn": [
+                "Migrate Neural-Lab database",
+                "Build Neural-Lab frontend"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "."
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*",
+                    "endsPattern": "Uvicorn running on"
+                }
+            }
+        }
+    ]
+}

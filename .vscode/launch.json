@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Neural-Lab",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "https://${env:CODESPACE_NAME}-8080.${env:GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Serve Neural-Lab"
+        },
+        {
+            "name": "Debug Current Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
